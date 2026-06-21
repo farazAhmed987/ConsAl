@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rescue</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="back_img">
+    <div id="rescue-updates" class="section main_div">
+        <h2>Rescue Updates</h2>
+        <div id="updates">
+            
+        </div>
+    </div>
+</div>
+ 
+<script>
+        // Simulating data for updates
+        const updates = [
+            { title: "Lucky's Rescue", location: "Lahore", status: "Recovering" },
+            { title: "Fido's Rescue", location: "Faisalabad", status: "Critical" }
+        ];
+
+        let updateHtml = '';
+        updates.forEach(update => {
+            updateHtml += `
+                <div class="update-card">
+                    <h3>${update.title}</h3>
+                    <p>Location: ${update.location}</p>
+                    <p>Status: ${update.status}</p>
+                </div>
+            `;
+        });
+
+        document.getElementById('updates').innerHTML = updateHtml;
+</script>
+</body>
+</html>

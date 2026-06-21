@@ -1,0 +1,130 @@
+import { useState, useEffect } from 'react'
+import api from '../../api/client'
+import DataTable from '../../components/admin/DataTable'
+import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import EmptyState from '../../components/ui/EmptyState'
+import Modal from '../../components/ui/Modal'
+
+export default function ManageRescue() {
+  const [updates, setUpdates] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [editing, setEditing] = useState(null)
+  const [form, setForm] = useState({ title: '', description: '', location: '', status: 'Ongoing' })
+
+  const load = () => api.get('/rescue-updates').then(r => setUpdates(r.data)).catch(() => {}).finally(() => setLoading(false))
+  useEffect(() => { load() }, [])
+
+  const resetForm = () => setForm({ title: '', description: '', location: '', status: 'Ongoing' })
+
+  const handleOpen = (item) => {
+    if (item) { setEditing(item.id); setForm(item) }
+    else { setEditing(null); resetForm() }
+    setModalOpen(true)
+  }
+
+  const handleSave = async () => {
+    try {
+      if (editing) {
+        await api.put(`/rescue-updates/${editing}`, form)
+        setUpdates(prev => prev.map(u => u.id === editing ? { ...u, ...form } : u))
+      } else {
+        const res = await api.post('/rescue-updates', form)
+        setUpdates(prev => [res.data, ...prev])
+      }
+      setModalOpen(false)
+      resetForm()
+    } catch (e) { alert('Failed to save') }
+  }
+
+  const handleDelete = async (id) => {
+    if (!confirm('Delete this rescue update?')) return
+    try {
+      await api.delete(`/rescue-updates/${id}`)
+      setUpdates(prev => prev.filter(u => u.id !== id))
+    } catch (e) { alert('Failed to delete') }
+  }
+
+  const columns = [
+    { key: 'title', label: 'Title' },
+    { key: 'location', label: 'Location' },
+    {
+      key: 'status', label: 'Status',
+      render: (val) => (
+        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${
+          ['Rescued', 'Recovering', 'Adopted'].includes(val) ? 'bg-emerald-400/10 text-emerald-300 ring-emerald-500/30' : 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30'
+        }`}>{val}</span>
+      )
+    },
+    {
+      key: 'created_at', label: 'Date',
+      render: (val) => new Date(val).toLocaleDateString()
+    },
+    {
+      key: 'id', label: 'Actions',
+      render: (_, row) => (
+        <div className="flex gap-2">
+          <button onClick={() => handleOpen(row)}
+            className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Edit</button>
+          <button onClick={() => handleDelete(row.id)}
+            className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30 transition hover:bg-red-500/20">Delete</button>
+        </div>
+      )
+    }
+  ]
+
+  return (
+    <div>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-50">Manage Rescue Updates</h2>
+          <p className="mt-1 text-sm text-zinc-500">Add, edit, or remove rescue updates</p>
+        </div>
+        <button onClick={() => handleOpen(null)}
+          className="rounded-full bg-emerald-400 px-5 py-2 text-sm font-medium text-zinc-950 shadow-lg shadow-emerald-400/20 transition hover:bg-emerald-300">
+          + Add Update
+        </button>
+      </div>
+
+      {loading ? <LoadingSpinner /> : updates.length === 0 ? <EmptyState message="No rescue updates" /> : (
+        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 backdrop-blur">
+          <DataTable columns={columns} data={updates} />
+        </div>
+      )}
+
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Rescue Update' : 'Add Rescue Update'}>
+        <div className="flex flex-col gap-4">
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-zinc-300">Title</label>
+            <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-zinc-300">Description</label>
+            <textarea value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} rows={3}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-zinc-300">Location</label>
+            <input value={form.location} onChange={e => setForm(p => ({ ...p, location: e.target.value }))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-zinc-300">Status</label>
+            <select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+              <option>Ongoing</option>
+              <option>Rescued</option>
+              <option>Recovering</option>
+              <option>Adopted</option>
+            </select>
+          </div>
+          <button onClick={handleSave}
+            className="mt-2 self-start rounded-full bg-emerald-400 px-6 py-2 font-medium text-zinc-950 shadow-lg shadow-emerald-400/20 transition hover:bg-emerald-300">
+            {editing ? 'Update' : 'Create'} Update
+          </button>
+        </div>
+      </Modal>
+    </div>
+  )
+}

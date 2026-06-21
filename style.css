@@ -1,0 +1,332 @@
+/* welcome page starts here */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    /* font-size: 1rem; */
+    font-weight: 500;
+}
+
+header{
+   background-color: #7D7D7D;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+   
+    display: flex;
+    justify-content: space-between;
+    padding-left: 5rem;
+    justify-content: start;
+    align-items: center;
+}
+header a{
+     text-decoration: none;
+    font-weight: 500;
+    /* font-size: 1rem; */
+    color:white;
+    padding-left: 2rem;
+    font-size: 1.1rem;
+
+}
+header h2{
+    color: wheat;
+    margin-right:0rem;
+    font-size: 1.8rem;
+}
+header a:hover{
+    text-decoration: underline;
+}
+.links{
+    margin-left: 5rem;
+}
+.main_container{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.img{
+    height: 100vh;
+    width: 50%;
+    /* background-color: red; */
+    background-image: url(assets/main_pg1.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+}
+.welcome{
+    height: 100vh;
+    width: 50%;
+    background-image: linear-gradient(black,rgb(131, 131, 120));
+    text-align: center;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
+.welcome h1{
+    color: wheat;
+    margin-bottom: 2rem;
+    font-size: 2.5rem;
+}
+.welcome p{
+    color: white;
+}
+.start{
+    width: 8rem;
+    height: 2.5rem;
+    border-radius: 50px;
+    border: none;
+    margin-top: 2rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    /* padding-left: 10rem; */
+    
+
+}
+.start:hover{
+    background-color: rgba(206, 202, 202,0.2);
+    box-shadow: 1px 1px 2px rgba(255, 255, 255,0.8);
+    color: white;
+    
+}
+/* welcome page ends here 
+
+home page starts here*/
+
+.img_sec{
+    width: 100%;
+    height: 95vh;
+    background-image: url(assets/image_sec.jpg);
+    /* background-position-x: end; */
+    /* background-position-y: top; */
+    background-position-x: right;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+    text-align: start;
+    padding-left: 5rem;
+    /* position: absolute; */
+}
+.img_sec h2{
+    padding-top: 15rem;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+}
+.img_sec p{
+    font-size: 1.2rem;
+    color: wheat;
+}
+ /* .card_sec{
+  
+    width: 100%;
+    padding-left: 5rem;
+    padding-right: 5rem;
+    background-image: linear-gradient(#000E0B,grey);
+    
+}  */
+/* .upper_cards{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+   
+}
+.upper_cards div{
+    width: 23%;
+    height: 10rem;
+    background-color: white;
+    border-radius: 1rem;
+    padding-top: 1rem;
+
+}
+.upper_cards div a{
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: rgb(160, 119, 43);
+
+}
+.lower_cards{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+   
+}
+.lower_cards div{
+   width: 23%;
+    height: 10rem;
+    background-color: white;
+    border-radius: 1rem;
+    padding-top: 1rem;
+
+}
+.lower_cards div a{
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: rgb(160, 119, 43);
+
+}
+.upper_cards div a:hover{
+   text-decoration:underline;
+}
+.lower_cards div a:hover{
+   text-decoration:underline;
+} */
+.footer{
+   padding-top: 1rem;
+   font-family: 1.1rem;
+   color: white;
+   padding-bottom: 1rem;
+   text-align: center;
+   background-color: #030F0D;
+
+}
+
+
+
+
+
+
+
+
+.back_img{
+    width: 100%;
+    height: 100vh;
+    background-image: url(assets/image_sec.jpg);
+    background-position: center;
+    background-size: cover;
+
+}
+.main_div{
+    width: 50%;
+    height: 100vh;
+    color: black;
+    margin: auto;
+    background-color: rgba(255,255,255,0.8);
+    padding: 8rem 3rem;
+    padding-top: 8rem;
+}
+.main_div h2{
+    font-size: 3rem;
+    padding-bottom: 3rem;
+}
+
+.form_content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+ 
+}
+.form_content div{
+    padding: 1rem 0;
+}
+.form_content label{
+    font-size: 1.3rem;
+    line-height: 2rem;
+}
+.inp_loc{
+    width:12rem;
+    height: 1.8rem;
+    margin-left: 4.2rem;
+}
+.inp_pho{
+    margin-left: 1rem;
+}
+.txt_area{
+    margin-left: 2.2rem;
+}
+.location{
+    display: flex;
+    justify-content: center;
+
+}
+.btn{
+    width: 10rem;
+    height: 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 1rem;
+    padding: 0.5rem 1rem ;
+    background-color: rgba(255, 255, 255,0.8);
+    color: black;
+    border: none;
+    margin-left: 20rem;
+}
+.btn:HOVER{
+    box-shadow: 1px 1px 4px rgba(25, 25, 25,0.2);
+}
+.register_doc input{
+    width: 12rem;
+    height: 2rem;
+    font-size: 1.2rem;
+}
+.reg1 input{
+    margin-left: 3.5rem;
+}
+.reg3 input{
+    margin-left:4.8rem;
+}
+.donate_p{
+    font-size: 1.2rem;
+}
+.btn_donate{
+    margin-top: 1rem;
+    margin-left: 25rem;
+}
+.loc1 input{
+    margin-left: 6.8rem;
+    
+}
+.aware p{
+    font-size: 1.3rem;
+    font-weight: 500;
+    /* line-height: 2rem; */
+    padding-bottom: 0.5rem;
+}
+.aware ul li a{
+    text-decoration: none;
+    font-size: 1.3rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    color: black;
+}
+.aware ul li{
+    padding: 0.5rem 0;
+
+}
+.aware ul li a:hover{
+    text-decoration: underline;
+}
+
+
+.env_blog h2{
+    
+}
+.env_blog h3{
+    font-weight: 600;
+    font-size: 1.4rem;
+    padding: 0.5rem 0rem;
+}
+.env_blog p{
+    font-size: 1.2rem;
+}
+
+.main_div_blog{
+    padding-top: 4rem;
+}
+.main_div_blog h2{
+    padding-bottom: 1rem;
+}
+
+.blog-post{
+    margin-top: 1rem;
+}

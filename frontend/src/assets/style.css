@@ -1,0 +1,41 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Legacy element selectors are intentionally neutralized so the
+   Tailwind glassmorphic header in Header.jsx fully controls styling. */
+header {
+  display: flex;
+  align-items: center;
+}
+header a {
+  text-decoration: none;
+}
+header a:hover {
+  text-decoration: none;
+}
+
+/* Custom scrollbar to match the dark theme */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;        /* zinc-800 */
+  border-radius: 9999px;
+  border: 2px solid #09090b;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #10b981;        /* emerald-500 */
+}
+
+/* Smooth global anchor + selection accents */
+::selection {
+  background: rgba(16, 185, 129, 0.3);
+  color: #ecfdf5;
+}
