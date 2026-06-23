@@ -33,4 +33,15 @@ function requireAdmin(req, res, next) {
   next();
 }
 
-module.exports = { signToken, verifyToken, requireAdmin, JWT_SECRET };
+function optionalAuth(req, res, next) {
+  const header = req.headers.authorization;
+  if (header && header.startsWith('Bearer ')) {
+    try {
+      const token = header.split(' ')[1];
+      req.user = jwt.verify(token, JWT_SECRET);
+    } catch { /* not authenticated, continue */ }
+  }
+  next();
+}
+
+module.exports = { signToken, verifyToken, requireAdmin, optionalAuth, JWT_SECRET };

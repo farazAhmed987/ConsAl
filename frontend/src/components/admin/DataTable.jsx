@@ -1,4 +1,4 @@
-export default function DataTable({ columns, data, onEdit, onDelete, actions = true }) {
+export default function DataTable({ columns, data, onEdit, onDelete, actions = false }) {
   return (
     <div className="overflow-x-auto rounded-2xl border border-zinc-800 bg-zinc-900/60 backdrop-blur">
       <table className="w-full text-sm">
@@ -17,7 +17,7 @@ export default function DataTable({ columns, data, onEdit, onDelete, actions = t
             <tr key={row.id} className="transition-colors hover:bg-zinc-800/40">
               {columns.map(col => (
                 <td key={col.key} className="whitespace-nowrap px-4 py-3 text-zinc-300">
-                  {col.render ? col.render(row) : row[col.key]}
+                  {col.render ? col.render(row[col.key], row) : row[col.key]}
                 </td>
               ))}
               {actions && (

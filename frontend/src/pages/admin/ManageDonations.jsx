@@ -1,39 +1,22 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import api from '../../api/client'
-import DataTable from '../../components/admin/DataTable'
+import AdminCardGrid from '../../components/admin/AdminCardGrid'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import EmptyState from '../../components/ui/EmptyState'
 
 export default function ManageDonations() {
   const [donations, setDonations] = useState([])
   const [loading, setLoading] = useState(true)
+  const location = useLocation()
 
   useEffect(() => {
+    setLoading(true)
     api.get('/donations').then(res => setDonations(res.data)).catch(() => {}).finally(() => setLoading(false))
-  }, [])
-
-  const columns = [
-    { key: 'donor_name', label: 'Donor' },
-    { key: 'donor_email', label: 'Email' },
-    {
-      key: 'amount', label: 'Amount',
-      render: (val) => <span className="font-semibold text-emerald-300">${parseFloat(val).toFixed(2)}</span>
-    },
-    {
-      key: 'payment_method', label: 'Method',
-      render: (val) => <span className="capitalize text-zinc-400">{val.replace('_', ' ')}</span>
-    },
-    {
-      key: 'transaction_id', label: 'Transaction ID',
-      render: (val) => <span className="font-mono text-xs text-zinc-500">{val}</span>
-    },
-    {
-      key: 'created_at', label: 'Date',
-      render: (val) => new Date(val).toLocaleDateString()
-    }
-  ]
+  }, [location.key])
 
   const total = donations.reduce((sum, d) => sum + parseFloat(d.amount || 0), 0)
+
+  if (loading) return <LoadingSpinner />
 
   return (
     <div>
@@ -48,11 +31,21 @@ export default function ManageDonations() {
         </div>
       </div>
 
-      {loading ? <LoadingSpinner /> : donations.length === 0 ? <EmptyState message="No donations received yet" icon="💰" /> : (
-        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 backdrop-blur">
-          <DataTable columns={columns} data={donations} />
-        </div>
-      )}
+      <AdminCardGrid items={donations} emptyMessage="No donations received yet" renderCard={d => (
+        <>
+          <div className="mb-2">
+            <h3 className="font-semibold text-zinc-100">{d.donor_name}</h3>
+            {d.donor_email && <p className="text-xs text-zinc-500">{d.donor_email}</p>}
+          </div>
+          <p className="mb-3 text-2xl font-bold text-emerald-300">${parseFloat(d.amount).toFixed(2)}</p>
+          <div className="mt-auto space-y-1 text-xs text-zinc-500">
+            <p>💳 {d.payment_method ? d.payment_method.replace(/_/g, ' ') : 'credit card'}</p>
+            <p className="font-mono text-zinc-600">ID: {d.transaction_id}</p>
+            <p>📅 {d.created_at ? new Date(d.created_at).toLocaleDateString() : ''}</p>
+            {d.notes && <p className="italic text-zinc-600">"{d.notes}"</p>}
+          </div>
+        </>
+      )} />
     </div>
   )
 }

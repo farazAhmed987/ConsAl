@@ -1,9 +1,12 @@
 const express = require('express');
 const { db } = require('../db');
-const { verifyToken, requireAdmin } = require('../middleware/auth');
+const { verifyToken, requireAdmin, optionalAuth } = require('../middleware/auth');
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', optionalAuth, (req, res) => {
+  if (req.user?.role === 'admin') {
+    return res.json(db.all("SELECT d.*, u.name AS submitter FROM doctors d LEFT JOIN users u ON d.submitted_by = u.id ORDER BY d.created_at DESC"));
+  }
   res.json(db.all("SELECT * FROM doctors WHERE is_approved = 1 ORDER BY created_at DESC"));
 });
 
@@ -12,6 +15,10 @@ router.post('/', verifyToken, (req, res) => {
   if (!name || !clinic_name || !city || !contact) return res.status(400).json({ error: 'Name, clinic, city, and contact are required' });
   const result = db.run('INSERT INTO doctors (submitted_by, name, clinic_name, specialty, city, contact, lat, lng) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', req.user.id, name, clinic_name, specialty || null, city, contact, lat || null, lng || null);
   res.status(201).json(db.get('SELECT * FROM doctors WHERE id = ?', result.lastInsertRowid));
+});
+
+router.get('/all', verifyToken, requireAdmin, (req, res) => {
+  res.json(db.all("SELECT d.*, u.name AS submitter FROM doctors d LEFT JOIN users u ON d.submitted_by = u.id ORDER BY d.created_at DESC"));
 });
 
 router.get('/pending', verifyToken, requireAdmin, (req, res) => {

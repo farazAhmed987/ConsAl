@@ -1,4 +1,8 @@
 import { useEffect, useRef } from 'react'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+
+const SEVERITY_COLORS = { low: '#eab308', medium: '#f97316', high: '#ef4444', critical: '#a855f7' }
 
 export default function MapView({ doctors = [], cruelty = [], center = { lat: 31.5497, lng: 74.3436 }, zoom = 7 }) {
   const mapRef = useRef(null)
@@ -6,58 +10,52 @@ export default function MapView({ doctors = [], cruelty = [], center = { lat: 31
   const markersRef = useRef([])
 
   useEffect(() => {
-    if (!window.google || !mapRef.current) return
-    mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
-      center,
-      zoom,
-      styles: [{ featureType: 'poi', stylers: [{ visibility: 'off' }] }]
-    })
+    if (mapInstanceRef.current) return
+    mapInstanceRef.current = L.map(mapRef.current, { zoomControl: true }).setView([center.lat, center.lng], zoom)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19
+    }).addTo(mapInstanceRef.current)
   }, [])
 
   useEffect(() => {
-    if (!window.google || !mapInstanceRef.current) return
-    markersRef.current.forEach(m => m.setMap(null))
+    const map = mapInstanceRef.current
+    if (!map) return
+
+    markersRef.current.forEach(m => map.removeLayer(m))
     markersRef.current = []
 
     doctors.forEach(doc => {
       if (!doc.lat || !doc.lng) return
-      const marker = new window.google.maps.Marker({
-        position: { lat: doc.lat, lng: doc.lng },
-        map: mapInstanceRef.current,
-        title: doc.name,
-        icon: { url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' }
+      const icon = L.divIcon({
+        className: '',
+        html: '<div style="background:#10b981;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>',
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
       })
-      const info = new window.google.maps.InfoWindow({
-        content: `<b>${doc.name}</b><br/>${doc.clinic_name}<br/>${doc.city}`
-      })
-      marker.addListener('click', () => info.open(mapInstanceRef.current, marker))
+      const marker = L.marker([doc.lat, doc.lng], { icon })
+        .addTo(map)
+        .bindPopup(`<b>${doc.name}</b><br/>${doc.clinic_name}<br/>${doc.city}`)
       markersRef.current.push(marker)
     })
 
     cruelty.forEach(item => {
       if (!item.lat || !item.lng) return
-      const colors = { low: 'yellow', medium: 'orange', high: 'red', critical: 'purple' }
-      const marker = new window.google.maps.Marker({
-        position: { lat: item.lat, lng: item.lng },
-        map: mapInstanceRef.current,
-        title: item.severity,
-        icon: { url: `http://maps.google.com/mapfiles/ms/icons/${colors[item.severity] || 'red'}-dot.png` }
+      const color = SEVERITY_COLORS[item.severity] || '#ef4444'
+      const icon = L.divIcon({
+        className: '',
+        html: `<div style="background:${color};width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div>`,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7]
       })
-      const info = new window.google.maps.InfoWindow({
-        content: `<b>Cruelty Report</b><br/>Severity: ${item.severity}<br/>${item.location}`
-      })
-      marker.addListener('click', () => info.open(mapInstanceRef.current, marker))
+      const marker = L.marker([item.lat, item.lng], { icon })
+        .addTo(map)
+        .bindPopup(`<b>Cruelty Report</b><br/>Severity: ${item.severity}<br/>${item.location}`)
       markersRef.current.push(marker)
     })
   }, [doctors, cruelty])
 
   return (
-    <div ref={mapRef} style={{ width: '100%', height: '400px' }} className="overflow-hidden rounded-xl ring-1 ring-zinc-800">
-      {!window.google && (
-        <div className="flex h-full items-center justify-center rounded-xl bg-zinc-900 px-6 text-center text-sm text-zinc-500">
-          Google Maps API key not configured. Add your key in MapPage.jsx
-        </div>
-      )}
-    </div>
+    <div ref={mapRef} style={{ width: '100%', height: '400px' }} className="overflow-hidden rounded-xl ring-1 ring-zinc-800" />
   )
 }

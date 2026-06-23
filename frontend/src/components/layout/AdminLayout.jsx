@@ -2,6 +2,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 
 const sidebarLinks = [
   { to: '/admin', label: 'Dashboard', end: true },
+  { to: '/admin/reports', label: 'Animal Reports' },
   { to: '/admin/rescue', label: 'Rescue Updates' },
   { to: '/admin/doctors', label: 'Doctors' },
   { to: '/admin/donations', label: 'Donations' },

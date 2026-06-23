@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import api from '../../api/client'
-import DataTable from '../../components/admin/DataTable'
+import AdminCardGrid, { StatusBadge } from '../../components/admin/AdminCardGrid'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import EmptyState from '../../components/ui/EmptyState'
 import Modal from '../../components/ui/Modal'
 
 export default function ManageRescue() {
@@ -11,9 +11,13 @@ export default function ManageRescue() {
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({ title: '', description: '', location: '', status: 'Ongoing' })
+  const location = useLocation()
 
-  const load = () => api.get('/rescue-updates').then(r => setUpdates(r.data)).catch(() => {}).finally(() => setLoading(false))
-  useEffect(() => { load() }, [])
+  const load = () => {
+    setLoading(true)
+    api.get('/rescue-updates').then(r => setUpdates(r.data)).catch(() => {}).finally(() => setLoading(false))
+  }
+  useEffect(() => { load() }, [location.key])
 
   const resetForm = () => setForm({ title: '', description: '', location: '', status: 'Ongoing' })
 
@@ -45,33 +49,7 @@ export default function ManageRescue() {
     } catch (e) { alert('Failed to delete') }
   }
 
-  const columns = [
-    { key: 'title', label: 'Title' },
-    { key: 'location', label: 'Location' },
-    {
-      key: 'status', label: 'Status',
-      render: (val) => (
-        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${
-          ['Rescued', 'Recovering', 'Adopted'].includes(val) ? 'bg-emerald-400/10 text-emerald-300 ring-emerald-500/30' : 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30'
-        }`}>{val}</span>
-      )
-    },
-    {
-      key: 'created_at', label: 'Date',
-      render: (val) => new Date(val).toLocaleDateString()
-    },
-    {
-      key: 'id', label: 'Actions',
-      render: (_, row) => (
-        <div className="flex gap-2">
-          <button onClick={() => handleOpen(row)}
-            className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Edit</button>
-          <button onClick={() => handleDelete(row.id)}
-            className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30 transition hover:bg-red-500/20">Delete</button>
-        </div>
-      )
-    }
-  ]
+  if (loading) return <LoadingSpinner />
 
   return (
     <div>
@@ -86,11 +64,30 @@ export default function ManageRescue() {
         </button>
       </div>
 
-      {loading ? <LoadingSpinner /> : updates.length === 0 ? <EmptyState message="No rescue updates" /> : (
-        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 backdrop-blur">
-          <DataTable columns={columns} data={updates} />
-        </div>
-      )}
+      <AdminCardGrid items={updates} emptyMessage="No rescue updates" renderCard={u => (
+        <>
+          <div className="mb-3 flex items-start justify-between gap-2">
+            <h3 className="font-semibold text-zinc-100">{u.title}</h3>
+            <StatusBadge status={u.status} mapping={{
+              Ongoing: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30',
+              Rescued: 'bg-emerald-400/10 text-emerald-300 ring-emerald-500/30',
+              Recovering: 'bg-blue-500/10 text-blue-400 ring-blue-500/30',
+              Adopted: 'bg-purple-500/10 text-purple-400 ring-purple-500/30'
+            }} />
+          </div>
+          {u.description && <p className="mb-2 flex-1 text-sm leading-relaxed text-zinc-400">{u.description}</p>}
+          <div className="mb-3 text-xs text-zinc-500">
+            <p>📍 {u.location}</p>
+            <p>📅 {u.created_at ? new Date(u.created_at).toLocaleDateString() : ''}</p>
+          </div>
+          <div className="mt-auto flex gap-2 border-t border-zinc-800 pt-3">
+            <button onClick={() => handleOpen(u)}
+              className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Edit</button>
+            <button onClick={() => handleDelete(u.id)}
+              className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30 transition hover:bg-red-500/20">Delete</button>
+          </div>
+        </>
+      )} />
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Rescue Update' : 'Add Rescue Update'}>
         <div className="flex flex-col gap-4">

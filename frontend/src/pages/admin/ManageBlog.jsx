@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import api from '../../api/client'
-import DataTable from '../../components/admin/DataTable'
+import AdminCardGrid from '../../components/admin/AdminCardGrid'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import EmptyState from '../../components/ui/EmptyState'
 import Modal from '../../components/ui/Modal'
 import { useAuth } from '../../hooks/useAuth'
 
@@ -12,20 +12,25 @@ export default function ManageBlog() {
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ title: '', content: '', author: '' })
+  const [form, setForm] = useState({ title: '', content: '', author: '', link_url: '' })
+  const location = useLocation()
 
-  const load = () => api.get('/blog').then(r => setPosts(r.data)).catch(() => {}).finally(() => setLoading(false))
-  useEffect(() => { load() }, [])
+  const load = () => {
+    setLoading(true)
+    api.get('/blog').then(r => setPosts(r.data)).catch(() => {}).finally(() => setLoading(false))
+  }
+  useEffect(() => { load() }, [location.key])
 
-  const resetForm = () => setForm({ title: '', content: '', author: user?.name || '' })
+  const resetForm = () => setForm({ title: '', content: '', author: user?.name || '', link_url: '' })
 
   const handleOpen = (item) => {
-    if (item) { setEditing(item.id); setForm(item) }
+    if (item) { setEditing(item.id); setForm({ title: item.title, content: item.content, author: item.author || '', link_url: item.link_url || '' }) }
     else { setEditing(null); resetForm() }
     setModalOpen(true)
   }
 
   const handleSave = async () => {
+    if (!form.title.trim() || !form.content.trim()) { alert('Title and content are required'); return }
     try {
       if (editing) {
         await api.put(`/blog/${editing}`, form)
@@ -47,26 +52,7 @@ export default function ManageBlog() {
     } catch (e) { alert('Failed to delete') }
   }
 
-  const columns = [
-    { key: 'title', label: 'Title' },
-    { key: 'author', label: 'Author' },
-    { key: 'content', label: 'Content', render: (val) => <span className="max-w-xs truncate text-zinc-400">{val}</span> },
-    {
-      key: 'created_at', label: 'Date',
-      render: (val) => new Date(val).toLocaleDateString()
-    },
-    {
-      key: 'id', label: 'Actions',
-      render: (_, row) => (
-        <div className="flex gap-2">
-          <button onClick={() => handleOpen(row)}
-            className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Edit</button>
-          <button onClick={() => handleDelete(row.id)}
-            className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30 transition hover:bg-red-500/20">Delete</button>
-        </div>
-      )
-    }
-  ]
+  if (loading) return <LoadingSpinner />
 
   return (
     <div>
@@ -81,11 +67,25 @@ export default function ManageBlog() {
         </button>
       </div>
 
-      {loading ? <LoadingSpinner /> : posts.length === 0 ? <EmptyState message="No blog posts" /> : (
-        <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60 backdrop-blur">
-          <DataTable columns={columns} data={posts} />
-        </div>
-      )}
+      <AdminCardGrid items={posts} emptyMessage="No blog posts" renderCard={p => (
+        <>
+          <div className="mb-2">
+            <h3 className="font-semibold text-zinc-100">{p.title}</h3>
+            {p.author && <p className="text-xs text-zinc-500">by {p.author}</p>}
+          </div>
+          <p className="mb-3 flex-1 text-sm leading-relaxed text-zinc-400">{p.content}</p>
+          <div className="mb-3 text-xs text-zinc-500">
+            {p.link_url && <p>🔗 <a href={p.link_url} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">{p.link_url}</a></p>}
+            <p>📅 {p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</p>
+          </div>
+          <div className="mt-auto flex gap-2 border-t border-zinc-800 pt-3">
+            <button onClick={() => handleOpen(p)}
+              className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Edit</button>
+            <button onClick={() => handleDelete(p.id)}
+              className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30 transition hover:bg-red-500/20">Delete</button>
+          </div>
+        </>
+      )} />
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Blog Post' : 'Create Blog Post'}>
         <div className="flex flex-col gap-4">
@@ -98,6 +98,11 @@ export default function ManageBlog() {
             <label className="mb-1 block text-sm font-semibold text-zinc-300">Author</label>
             <input value={form.author} onChange={e => setForm(p => ({ ...p, author: e.target.value }))}
               className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-zinc-300">Link URL (optional)</label>
+            <input value={form.link_url} onChange={e => setForm(p => ({ ...p, link_url: e.target.value }))}
+              className="w-full rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" placeholder="https://" />
           </div>
           <div>
             <label className="mb-1 block text-sm font-semibold text-zinc-300">Content</label>

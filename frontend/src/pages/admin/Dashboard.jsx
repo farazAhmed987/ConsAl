@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import api from '../../api/client'
 import StatsCard from '../../components/ui/StatsCard'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
@@ -8,8 +9,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [recentDonations, setRecentDonations] = useState([])
   const [error, setError] = useState('')
+  const location = useLocation()
 
   useEffect(() => {
+    setLoading(true)
+    setError('')
     Promise.all([
       api.get('/admin/stats'),
       api.get('/donations').catch(() => ({ data: [] }))
@@ -17,27 +21,28 @@ export default function AdminDashboard() {
       setStats(s.data)
       setRecentDonations((d.data || []).slice(0, 5))
     }).catch(err => setError(err.message)).finally(() => setLoading(false))
-  }, [])
+  }, [location.key])
 
   if (loading) return <LoadingSpinner />
   if (error) return <div className="py-12 text-center text-red-400">{error}</div>
   if (!stats) return null
 
   const cards = [
-    { label: 'Total Reports', value: stats.reports, icon: '🐾', color: 'border-blue-800 bg-blue-500/10 text-blue-400' },
-    { label: 'Total Donations', value: stats.donations, icon: '💰', color: 'border-emerald-800 bg-emerald-400/10 text-emerald-300' },
-    { label: 'Doctor Registrations', value: stats.doctors, icon: '👨‍⚕️', color: 'border-purple-800 bg-purple-500/10 text-purple-400' },
-    { label: 'Cruelty Reports', value: stats.cruelty, icon: '🚨', color: 'border-red-800 bg-red-500/10 text-red-400' },
-    { label: 'Awareness Posts', value: stats.awareness, icon: '📚', color: 'border-yellow-800 bg-yellow-500/10 text-yellow-400' },
-    { label: 'Blog Posts', value: stats.blog, icon: '📝', color: 'border-indigo-800 bg-indigo-500/10 text-indigo-400' },
+    { title: 'Animal Reports', value: stats.reports, sub: 'Sighted & rescued animals', icon: '🐾', color: 'border-blue-800 bg-blue-500/10' },
+    { title: 'Donations', value: stats.donations, sub: 'Total contributions received', icon: '💰', color: 'border-emerald-800 bg-emerald-400/10' },
+    { title: 'Doctor Registrations', value: stats.doctors, sub: 'Approved & pending veterinarians', icon: '👨‍⚕️', color: 'border-purple-800 bg-purple-500/10' },
+    { title: 'Cruelty Reports', value: stats.cruelty, sub: 'Incidents reported by users', icon: '🚨', color: 'border-red-800 bg-red-500/10' },
+    { title: 'Awareness Posts', value: stats.awareness, sub: 'Educational & awareness content', icon: '📚', color: 'border-yellow-800 bg-yellow-500/10' },
+    { title: 'Blog Posts', value: stats.blog, sub: 'Articles published on the blog', icon: '📝', color: 'border-indigo-800 bg-indigo-500/10' },
+    { title: 'Rescue Updates', value: stats.rescue || 0, sub: 'Ongoing & completed rescues', icon: '🚑', color: 'border-teal-800 bg-teal-500/10' },
   ]
 
   return (
     <div>
       <h2 className="mb-1 text-2xl font-bold tracking-tight text-zinc-50">Admin Dashboard</h2>
       <p className="mb-6 text-sm text-zinc-500">Overview of all ConsAl data and activities</p>
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {cards.map(c => <StatsCard key={c.label} {...c} />)}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {cards.map(c => <StatsCard key={c.title} {...c} />)}
       </div>
 
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 backdrop-blur">

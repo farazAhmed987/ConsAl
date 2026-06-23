@@ -12,6 +12,7 @@ const rescueRoutes = require('./routes/rescue');
 const awarenessRoutes = require('./routes/awareness');
 const blogRoutes = require('./routes/blog');
 const mapRoutes = require('./routes/map');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,7 @@ app.use('/api/rescue-updates', rescueRoutes);
 app.use('/api/awareness', awarenessRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/map-data', mapRoutes);
+app.use('/api/admin', adminRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');

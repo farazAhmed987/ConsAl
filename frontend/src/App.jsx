@@ -27,6 +27,7 @@ import ManageDonations from './pages/admin/ManageDonations'
 import ManageCruelty from './pages/admin/ManageCruelty'
 import ManageAwareness from './pages/admin/ManageAwareness'
 import ManageBlog from './pages/admin/ManageBlog'
+import ManageReports from './pages/admin/ManageReports'
 
 export default function App() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
           <Route path="/admin/cruelty" element={<ManageCruelty />} />
           <Route path="/admin/awareness" element={<ManageAwareness />} />
           <Route path="/admin/blog" element={<ManageBlog />} />
+          <Route path="/admin/reports" element={<ManageReports />} />
         </Route>
       </Route>
 
