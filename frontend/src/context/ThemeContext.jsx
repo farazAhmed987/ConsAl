@@ -1,6 +1,7 @@
-import { createContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useState, useEffect, useCallback, useContext } from 'react'
 
 export const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} })
+export const useTheme = () => useContext(ThemeContext)
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark')

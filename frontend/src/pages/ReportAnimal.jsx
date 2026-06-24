@@ -48,7 +48,7 @@ export default function ReportAnimal() {
           {submissions.length > 0 && <span className="text-sm font-normal text-zinc-500">({submissions.length})</span>}
         </h3>
         {loading ? <LoadingSpinner /> : submissions.length === 0 ? (
-          <EmptyState message="No reports submitted yet" icon="🐾" />
+          <EmptyState message="No reports submitted yet" />
         ) : (
           <div className="flex flex-col gap-3">
             {submissions.map(r => (
@@ -56,7 +56,6 @@ export default function ReportAnimal() {
                 <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
                   <div className="flex-1">
                     <div className="mb-1 flex items-center gap-2">
-                      <span className="text-lg">🐕</span>
                       <p className="font-bold text-zinc-100">{r.animal_type}</p>
                       <span className="text-zinc-600">•</span>
                       <p className="text-zinc-400">{r.location}</p>

@@ -59,7 +59,7 @@ export default function Login() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm text-zinc-500">
-          Don't have an account? <Link to="/signup" className="font-medium text-emerald-300 hover:text-emerald-300">Sign up</Link>
+          Don't have an account? <Link to="/register" className="font-medium text-emerald-300 hover:text-emerald-300">Sign up</Link>
         </p>
         <p className="mt-2 text-center text-xs text-zinc-600">
           Demo admin: admin@pawpal.com / admin123

@@ -3,6 +3,8 @@ const { db } = require('../db');
 const { verifyToken, requireAdmin } = require('../middleware/auth');
 const router = express.Router();
 
+const VALID_STATUSES = ['pending', 'in_progress', 'rescued', 'recovering', 'released'];
+
 router.get('/', verifyToken, (req, res) => {
   let rows;
   if (req.user.role === 'admin') {
@@ -10,6 +12,11 @@ router.get('/', verifyToken, (req, res) => {
   } else {
     rows = db.all('SELECT * FROM animal_reports WHERE user_id = ? ORDER BY created_at DESC', req.user.id);
   }
+  res.json(rows);
+});
+
+router.get('/rescue-feed', (req, res) => {
+  const rows = db.all("SELECT *, 'animal_report' AS source_type, 'Animal Report' AS type_label FROM animal_reports WHERE status IN ('rescued','recovering','released') ORDER BY created_at DESC");
   res.json(rows);
 });
 
@@ -29,9 +36,14 @@ router.post('/', verifyToken, (req, res) => {
 });
 
 router.put('/:id/status', verifyToken, requireAdmin, (req, res) => {
-  const { status } = req.body;
-  if (!['pending', 'in_progress', 'resolved'].includes(status)) return res.status(400).json({ error: 'Invalid status' });
-  db.run('UPDATE animal_reports SET status = ? WHERE id = ?', status, req.params.id);
+  const { status, admin_notes } = req.body;
+  if (status && !VALID_STATUSES.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  if (admin_notes !== undefined) {
+    db.run('UPDATE animal_reports SET admin_notes = ? WHERE id = ?', admin_notes, req.params.id);
+  }
+  if (status) {
+    db.run('UPDATE animal_reports SET status = ? WHERE id = ?', status, req.params.id);
+  }
   res.json(db.get('SELECT * FROM animal_reports WHERE id = ?', req.params.id));
 });
 

@@ -30,7 +30,7 @@ export default function ManageBlog() {
   }
 
   const handleSave = async () => {
-    if (!form.title.trim() || !form.content.trim()) { alert('Title and content are required'); return }
+    if (!form.title.trim() || (!form.content.trim() && !form.link_url.trim())) { alert('Title and content (or link URL) are required'); return }
     try {
       if (editing) {
         await api.put(`/blog/${editing}`, form)
@@ -41,7 +41,7 @@ export default function ManageBlog() {
       }
       setModalOpen(false)
       resetForm()
-    } catch (e) { alert('Failed to save') }
+    } catch (e) { alert(e.response?.data?.error || 'Failed to save') }
   }
 
   const handleDelete = async (id) => {
@@ -75,7 +75,7 @@ export default function ManageBlog() {
           </div>
           <p className="mb-3 flex-1 text-sm leading-relaxed text-zinc-400">{p.content}</p>
           <div className="mb-3 text-xs text-zinc-500">
-            {p.link_url && <p>🔗 <a href={p.link_url} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">{p.link_url}</a></p>}
+            {p.link_url && <p><a href={p.link_url} target="_blank" rel="noopener noreferrer" className="text-emerald-300 hover:underline">Read More</a></p>}
             <p>📅 {p.created_at ? new Date(p.created_at).toLocaleDateString() : ''}</p>
           </div>
           <div className="mt-auto flex gap-2 border-t border-zinc-800 pt-3">

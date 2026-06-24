@@ -25,7 +25,7 @@ export default function Awareness() {
               {p.link_url && (
                 <a href={p.link_url} target="_blank" rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-300 hover:text-emerald-300">
-                  Learn more →
+                  Read More →
                 </a>
               )}
             </div>

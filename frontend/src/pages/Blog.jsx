@@ -27,6 +27,12 @@ export default function Blog() {
                 <span>{formatDate(p.created_at)}</span>
               </div>
               <p className="whitespace-pre-line text-sm leading-relaxed text-zinc-400">{p.content}</p>
+              {p.link_url && (
+                <a href={p.link_url} target="_blank" rel="noopener noreferrer"
+                  className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-emerald-300 hover:text-emerald-300">
+                  Read More →
+                </a>
+              )}
             </article>
           ))}
         </div>

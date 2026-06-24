@@ -1,4 +1,4 @@
-export default function AdminCardGrid({ items, renderCard, emptyMessage = 'No items' }) {
+export default function AdminCardGrid({ items, renderCard, emptyMessage = 'No items', getKey }) {
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-10 text-center backdrop-blur">
@@ -10,7 +10,7 @@ export default function AdminCardGrid({ items, renderCard, emptyMessage = 'No it
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {items.map(item => (
-        <div key={item.id} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 backdrop-blur transition-colors hover:border-emerald-500/40">
+        <div key={getKey ? getKey(item) : item.id} className="flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 backdrop-blur transition-colors hover:border-emerald-500/40">
           {renderCard(item)}
         </div>
       ))}

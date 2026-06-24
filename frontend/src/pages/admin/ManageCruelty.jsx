@@ -1,12 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import api from '../../api/client'
-import AdminCardGrid, { StatusBadge } from '../../components/admin/AdminCardGrid'
+import AdminCardGrid from '../../components/admin/AdminCardGrid'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+
+const STATUS_OPTIONS = ['pending', 'investigating', 'rescued', 'recovering', 'adopted']
+
+const STATUS_BADGE = {
+  pending: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30',
+  investigating: 'bg-orange-500/10 text-orange-400 ring-orange-500/30',
+  rescued: 'bg-emerald-400/10 text-emerald-300 ring-emerald-500/30',
+  recovering: 'bg-purple-500/10 text-purple-400 ring-purple-500/30',
+  adopted: 'bg-pink-500/10 text-pink-400 ring-pink-500/30'
+}
+
+const SEVERITY_COLORS = {
+  low: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30',
+  medium: 'bg-orange-500/10 text-orange-400 ring-orange-500/30',
+  high: 'bg-red-500/10 text-red-400 ring-red-500/30',
+  critical: 'bg-purple-500/10 text-purple-400 ring-purple-500/30'
+}
 
 export default function ManageCruelty() {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
+  const [notesInput, setNotesInput] = useState({})
   const location = useLocation()
 
   const load = () => {
@@ -17,16 +35,18 @@ export default function ManageCruelty() {
 
   const handleStatus = async (id, status) => {
     try {
-      await api.put(`/cruelty-reports/${id}/status`, { status })
-      setReports(prev => prev.map(r => r.id === id ? { ...r, status } : r))
+      const res = await api.put(`/cruelty-reports/${id}/status`, { status })
+      setReports(prev => prev.map(r => r.id === id ? { ...r, ...res.data } : r))
     } catch (e) { alert('Failed to update') }
   }
 
-  const severityColors = {
-    low: 'bg-yellow-500/10 text-yellow-400 ring-yellow-500/30',
-    medium: 'bg-orange-500/10 text-orange-400 ring-orange-500/30',
-    high: 'bg-red-500/10 text-red-400 ring-red-500/30',
-    critical: 'bg-purple-500/10 text-purple-400 ring-purple-500/30'
+  const handleNotesSave = async (id) => {
+    const val = notesInput[id] !== undefined ? notesInput[id] : ''
+    try {
+      const res = await api.put(`/cruelty-reports/${id}/status`, { admin_notes: val })
+      setReports(prev => prev.map(r => r.id === id ? { ...r, ...res.data } : r))
+      setNotesInput(prev => ({ ...prev, [id]: '' }))
+    } catch (e) { alert('Failed to save notes') }
   }
 
   if (loading) return <LoadingSpinner />
@@ -42,25 +62,36 @@ export default function ManageCruelty() {
           <div className="mb-3 flex items-start justify-between gap-2">
             <div>
               <h3 className="font-semibold text-zinc-100">{r.submitter || 'Anonymous'}</h3>
-              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${severityColors[r.severity] || 'bg-zinc-800 text-zinc-400 ring-zinc-700'}`}>
+              <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ring-1 ring-inset ${SEVERITY_COLORS[r.severity] || 'bg-zinc-800 text-zinc-400 ring-zinc-700'}`}>
                 {r.severity}
               </span>
             </div>
-            <StatusBadge status={r.status} mapping={{ investigating: 'bg-orange-500/10 text-orange-400 ring-orange-500/30' }} />
+            <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${STATUS_BADGE[r.status] || 'bg-zinc-800 text-zinc-400 ring-zinc-700'}`}>
+              {r.status.replace(/_/g, ' ')}
+            </span>
           </div>
           <p className="mb-2 flex-1 text-sm leading-relaxed text-zinc-400">{r.incident_description}</p>
           <div className="mb-3 text-xs text-zinc-500">
-            <p>📍 {r.location}</p>
-            <p>📅 {r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}</p>
+            <p>{r.location}</p>
+            <p>{r.created_at ? new Date(r.created_at).toLocaleDateString() : ''}</p>
           </div>
-          <div className="mt-auto flex items-center gap-2 border-t border-zinc-800 pt-3">
+          <div className="mb-3 flex items-center gap-2 border-t border-zinc-800 pt-3">
             <span className="text-xs text-zinc-500">Status:</span>
             <select value={r.status} onChange={e => handleStatus(r.id, e.target.value)}
               className="rounded-lg border border-zinc-700 bg-zinc-950/60 px-2.5 py-1 text-xs text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
-              <option value="pending">Pending</option>
-              <option value="investigating">Investigating</option>
-              <option value="resolved">Resolved</option>
+              {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>)}
             </select>
+          </div>
+          <div className="border-t border-zinc-800 pt-3">
+            <div className="flex items-start gap-2">
+              <input value={notesInput[r.id] !== undefined ? notesInput[r.id] : (r.admin_notes || '')}
+                onChange={e => setNotesInput(prev => ({ ...prev, [r.id]: e.target.value }))}
+                className="flex-1 rounded-lg border border-zinc-700 bg-zinc-950/60 px-3 py-1.5 text-xs text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                placeholder="Admin notes (optional)" />
+              <button onClick={() => handleNotesSave(r.id)}
+                className="rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-inset ring-emerald-500/30 transition hover:bg-emerald-400/20">Save</button>
+            </div>
+            {r.admin_notes && <p className="mt-2 text-xs italic text-zinc-500">Notes: {r.admin_notes}</p>}
           </div>
         </>
       )} />

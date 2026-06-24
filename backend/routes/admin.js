@@ -10,7 +10,7 @@ router.get('/stats', verifyToken, requireAdmin, (req, res) => {
   const cruelty = db.get('SELECT COUNT(*) AS count FROM cruelty_reports');
   const awareness = db.get('SELECT COUNT(*) AS count FROM awareness_posts');
   const blog = db.get('SELECT COUNT(*) AS count FROM blog_posts');
-  const rescue = db.get('SELECT COUNT(*) AS count FROM rescue_updates');
+  const adoptions = db.get('SELECT COUNT(*) AS count FROM adoption_applications WHERE status = ?', 'pending');
   res.json({
     reports: reports.count,
     donations: donations.count,
@@ -18,7 +18,7 @@ router.get('/stats', verifyToken, requireAdmin, (req, res) => {
     cruelty: cruelty.count,
     awareness: awareness.count,
     blog: blog.count,
-    rescue: rescue.count
+    adoptions: adoptions.count
   });
 });
 

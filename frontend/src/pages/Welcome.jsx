@@ -5,8 +5,12 @@ export default function Welcome() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-zinc-950 md:flex-row">
-      <div className="relative h-[50vh] w-full overflow-hidden md:order-2 md:h-screen md:w-1/2"
-        style={{ backgroundImage: "url(/assets/hero-pets.svg)", backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div className="relative h-[50vh] w-full overflow-hidden md:order-2 md:h-screen md:w-1/2">
+        <img
+          src="/assets/image_sec.jpg"
+          alt="Hero"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/10 via-transparent to-zinc-950/30 md:bg-gradient-to-l md:from-emerald-400/10 md:via-transparent md:to-zinc-950/30"></div>
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:left-8 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:translate-x-0">
           <div className="rounded-2xl border border-zinc-800/50 bg-zinc-950/60 p-4 text-center backdrop-blur-sm md:text-left">

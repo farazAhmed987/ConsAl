@@ -28,13 +28,13 @@ export default function AdminDashboard() {
   if (!stats) return null
 
   const cards = [
-    { title: 'Animal Reports', value: stats.reports, sub: 'Sighted & rescued animals', icon: '🐾', color: 'border-blue-800 bg-blue-500/10' },
-    { title: 'Donations', value: stats.donations, sub: 'Total contributions received', icon: '💰', color: 'border-emerald-800 bg-emerald-400/10' },
-    { title: 'Doctor Registrations', value: stats.doctors, sub: 'Approved & pending veterinarians', icon: '👨‍⚕️', color: 'border-purple-800 bg-purple-500/10' },
-    { title: 'Cruelty Reports', value: stats.cruelty, sub: 'Incidents reported by users', icon: '🚨', color: 'border-red-800 bg-red-500/10' },
-    { title: 'Awareness Posts', value: stats.awareness, sub: 'Educational & awareness content', icon: '📚', color: 'border-yellow-800 bg-yellow-500/10' },
-    { title: 'Blog Posts', value: stats.blog, sub: 'Articles published on the blog', icon: '📝', color: 'border-indigo-800 bg-indigo-500/10' },
-    { title: 'Rescue Updates', value: stats.rescue || 0, sub: 'Ongoing & completed rescues', icon: '🚑', color: 'border-teal-800 bg-teal-500/10' },
+    { title: 'Animal Reports', value: stats.reports, sub: 'Sighted & rescued animals', icon: '', color: 'border-blue-800 bg-blue-500/10' },
+    { title: 'Donations', value: stats.donations, sub: 'Total contributions received', icon: '', color: 'border-emerald-800 bg-emerald-400/10' },
+    { title: 'Doctor Registrations', value: stats.doctors, sub: 'Approved & pending veterinarians', icon: '', color: 'border-purple-800 bg-purple-500/10' },
+    { title: 'Cruelty Reports', value: stats.cruelty, sub: 'Incidents reported by users', icon: '', color: 'border-red-800 bg-red-500/10' },
+    { title: 'Awareness Posts', value: stats.awareness, sub: 'Educational & awareness content', icon: '', color: 'border-yellow-800 bg-yellow-500/10' },
+    { title: 'Blog Posts', value: stats.blog, sub: 'Articles published on the blog', icon: '', color: 'border-indigo-800 bg-indigo-500/10' },
+    { title: 'Adoption Requests', value: stats.adoptions || 0, sub: 'Pending adoption applications', icon: '', color: 'border-teal-800 bg-teal-500/10' },
   ]
 
   return (

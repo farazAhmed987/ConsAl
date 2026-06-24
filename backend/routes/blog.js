@@ -8,21 +8,33 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', verifyToken, requireAdmin, (req, res) => {
-  const { title, content, author, link_url } = req.body;
-  if (!title || !content) return res.status(400).json({ error: 'Title and content are required' });
-  const result = db.run('INSERT INTO blog_posts (title, content, author, link_url, created_by) VALUES (?, ?, ?, ?, ?)', title, content, author || null, link_url || null, req.user.id);
-  res.status(201).json(db.get('SELECT * FROM blog_posts WHERE id = ?', result.lastInsertRowid));
+  try {
+    const { title, content, author, link_url } = req.body;
+    if (!title || (!content && !link_url)) return res.status(400).json({ error: 'Title and content (or link URL) are required' });
+    const result = db.run('INSERT INTO blog_posts (title, content, author, link_url, created_by) VALUES (?, ?, ?, ?, ?)', title, content || '', author || null, link_url || null, req.user.id);
+    res.status(201).json(db.get('SELECT * FROM blog_posts WHERE id = ?', result.lastInsertRowid));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.put('/:id', verifyToken, requireAdmin, (req, res) => {
-  const { title, content, author, link_url } = req.body;
-  db.run('UPDATE blog_posts SET title = COALESCE(?, title), content = COALESCE(?, content), author = COALESCE(?, author), link_url = COALESCE(?, link_url) WHERE id = ?', title, content, author, link_url, req.params.id);
-  res.json(db.get('SELECT * FROM blog_posts WHERE id = ?', req.params.id));
+  try {
+    const { title, content, author, link_url } = req.body;
+    db.run('UPDATE blog_posts SET title = COALESCE(?, title), content = COALESCE(?, content), author = COALESCE(?, author), link_url = COALESCE(?, link_url) WHERE id = ?', title, content, author, link_url, req.params.id);
+    res.json(db.get('SELECT * FROM blog_posts WHERE id = ?', req.params.id));
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 router.delete('/:id', verifyToken, requireAdmin, (req, res) => {
-  db.run('DELETE FROM blog_posts WHERE id = ?', req.params.id);
-  res.json({ message: 'Deleted' });
+  try {
+    db.run('DELETE FROM blog_posts WHERE id = ?', req.params.id);
+    res.json({ message: 'Deleted' });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
 module.exports = router;
