@@ -33,7 +33,7 @@ export default function MapPage() {
           </div>
           {totalItems === 0 && (
             <div className="py-8 text-center text-zinc-500">
-              <p className="text-lg">📍 No location data available yet</p>
+              <p className="text-lg">No location data available yet</p>
               <p className="mt-1 text-sm">Data will appear once doctors are approved and reports are submitted.</p>
             </div>
           )}

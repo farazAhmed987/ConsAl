@@ -10,6 +10,8 @@ import Login from './pages/Login'
 import Signup from './pages/Signup'
 import Home from './pages/Home'
 import Doctors from './pages/Doctors'
+import MapPage from './pages/MapPage'
+import Profile from './pages/Profile'
 import ReportAnimal from './pages/ReportAnimal'
 import ReportCruelty from './pages/ReportCruelty'
 import Donate from './pages/Donate'
@@ -30,21 +32,35 @@ import ManageBlog from './pages/admin/ManageBlog'
 import ManageAwareness from './pages/admin/ManageAwareness'
 import ManageAdoptions from './pages/admin/ManageAdoptions'
 
+function LoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+      <div className="text-center">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-emerald-400 border-t-transparent" />
+        <p className="text-sm text-zinc-500">Loading...</p>
+      </div>
+    </div>
+  )
+}
+
 function AdminGuard({ children }) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingScreen />
   if (!user) return <Navigate to="/login" replace />
   if (user.role !== 'admin') return <Navigate to="/home" replace />
   return children
 }
 
 function AuthGuard({ children }) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingScreen />
   if (!user) return <Navigate to="/login" replace />
   return children
 }
 
 function GuestGuard({ children }) {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
+  if (loading) return <LoadingScreen />
   if (user) return <Navigate to={user.role === 'admin' ? '/admin' : '/home'} replace />
   return children
 }
@@ -53,13 +69,16 @@ function App() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
-        <Route path="/" element={<Welcome />} />
+        <Route path="/" element={<GuestGuard><Welcome /></GuestGuard>} />
         <Route path="/login" element={<GuestGuard><Login /></GuestGuard>} />
         <Route path="/register" element={<GuestGuard><Signup /></GuestGuard>} />
       </Route>
       <Route element={<AuthGuard><UserLayout /></AuthGuard>}>
         <Route path="/home" element={<Home />} />
         <Route path="/doctors" element={<Doctors />} />
+        <Route path="/map" element={<MapPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/register-doctor" element={<RegisterDoctor />} />
         <Route path="/report-animal" element={<ReportAnimal />} />
         <Route path="/report-cruelty" element={<ReportCruelty />} />
         <Route path="/donate" element={<Donate />} />
@@ -68,7 +87,6 @@ function App() {
         <Route path="/rescue-updates" element={<RescueUpdates />} />
         <Route path="/adopt" element={<Adopt />} />
         <Route path="/my-applications" element={<MyApplications />} />
-        <Route path="/register-doctor" element={<RegisterDoctor />} />
       </Route>
       <Route path="/admin" element={<AdminGuard><AdminLayout /></AdminGuard>}>
         <Route index element={<Dashboard />} />

@@ -56,10 +56,14 @@ export default function RegisterDoctorForm({ onSuccess }) {
           <select name="specialty" value={form.specialty} onChange={handleChange}
             className="rounded-lg border border-zinc-700 bg-zinc-950/60 px-4 py-2.5 text-zinc-100 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
             <option value="">Select specialty...</option>
-            <option value="General">General</option>
-            <option value="Surgeon">Surgeon</option>
-            <option value="Dermatologist">Dermatologist</option>
-            <option value="Dentist">Dentist</option>
+            <option value="General Veterinary">General Veterinary</option>
+            <option value="Small Animal Medicine">Small Animal Medicine</option>
+            <option value="Large Animal Medicine">Large Animal Medicine</option>
+            <option value="Veterinary Surgery">Veterinary Surgery</option>
+            <option value="Veterinary Dermatology">Veterinary Dermatology</option>
+            <option value="Veterinary Dentistry">Veterinary Dentistry</option>
+            <option value="Exotic Pets">Exotic Pets</option>
+            <option value="Equine Specialist">Equine Specialist</option>
             <option value="Other">Other</option>
           </select>
         </div>

@@ -30,7 +30,7 @@ export default function ManageReports() {
     try {
       const res = await api.put(`/reports/${id}/status`, { status })
       setReports(prev => prev.map(r => r.id === id ? { ...r, ...res.data } : r))
-    } catch (e) { alert('Failed to update') }
+    } catch (e) { alert(e.response?.data?.detail || e.response?.data?.error || 'Failed to update') }
   }
 
   const handleNotesSave = async (id) => {
@@ -39,7 +39,7 @@ export default function ManageReports() {
       const res = await api.put(`/reports/${id}/status`, { admin_notes: val })
       setReports(prev => prev.map(r => r.id === id ? { ...r, ...res.data } : r))
       setNotesInput(prev => ({ ...prev, [id]: '' }))
-    } catch (e) { alert('Failed to save notes') }
+    } catch (e) { alert(e.response?.data?.detail || e.response?.data?.error || 'Failed to save notes') }
   }
 
   if (loading) return <LoadingSpinner />

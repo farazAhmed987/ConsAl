@@ -49,9 +49,9 @@ export default function ManageDoctors() {
             <StatusBadge status={STATUS_MAP[d.is_approved] || 'pending'} />
           </div>
           <div className="mb-3 flex-1 space-y-1 text-sm text-zinc-400">
-            <p>🏥 {d.clinic_name}</p>
-            <p>📍 {d.city}</p>
-            <p>📞 {d.contact}</p>
+            <p>Clinic: {d.clinic_name}</p>
+            <p>City: {d.city}</p>
+            <p>Contact: {d.contact}</p>
             {d.submitter && <p className="text-xs text-zinc-500">Submitted by: {d.submitter}</p>}
           </div>
           <div className="mt-auto flex gap-2 border-t border-zinc-800 pt-3">

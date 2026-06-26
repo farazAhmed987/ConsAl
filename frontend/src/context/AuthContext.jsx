@@ -8,22 +8,26 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  const clearAuth = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+  }
+
   useEffect(() => {
     const token = localStorage.getItem('token')
     const savedUser = localStorage.getItem('user')
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser))
-      api.get('/auth/me').then(res => {
-        setUser(res.data)
-        localStorage.setItem('user', JSON.stringify(res.data))
-      }).catch(() => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
-        setUser(null)
-      }).finally(() => setLoading(false))
-    } else {
+    if (!token || !savedUser) {
+      clearAuth()
       setLoading(false)
+      return
     }
+    api.get('/auth/me').then(res => {
+      setUser(res.data)
+      localStorage.setItem('user', JSON.stringify(res.data))
+    }).catch(() => {
+      clearAuth()
+    }).finally(() => setLoading(false))
   }, [])
 
   const login = async (email, password) => {
@@ -43,9 +47,7 @@ export function AuthProvider({ children }) {
   }
 
   const logout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
-    setUser(null)
+    clearAuth()
   }
 
   return (

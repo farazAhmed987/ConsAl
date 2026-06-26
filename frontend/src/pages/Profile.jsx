@@ -56,7 +56,7 @@ export default function Profile() {
       </div>
 
       {tab === 'reports' && (
-        reports.length === 0 ? <EmptyState message="No reports submitted yet" icon="📋" /> : (
+        reports.length === 0 ? <EmptyState message="No reports submitted yet" /> : (
           <div className="flex flex-col gap-3">
             {reports.map(r => (
               <div key={r.id} className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 backdrop-blur transition hover:border-zinc-700">
@@ -81,7 +81,7 @@ export default function Profile() {
       )}
 
       {tab === 'donations' && (
-        donations.length === 0 ? <EmptyState message="No donations yet" icon="💝" /> : (
+        donations.length === 0 ? <EmptyState message="No donations yet" /> : (
           <div className="flex flex-col gap-3">
             {donations.map(d => (
               <div key={d.id} className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-5 backdrop-blur transition hover:border-zinc-700">

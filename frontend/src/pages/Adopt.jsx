@@ -81,7 +81,7 @@ export default function Adopt() {
         </div>
       )}
 
-      {animals.length > 0 && (
+      {animals.length > 0 && !selected && (
         <div className="mt-10">
           <h2 className="mb-4 text-xl font-bold text-zinc-50">Animal Locations</h2>
           <div className="h-80 overflow-hidden rounded-2xl border border-zinc-800">
